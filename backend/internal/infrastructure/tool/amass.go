@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os/exec"
 	"sync"
+
+	"backend/internal/config"
 )
 
 // AmassTool provides basic domain enumeration and intelligence gathering
@@ -42,11 +44,16 @@ func (a *AmassTool) ScanDomain(domain string) error {
 	// Stop any existing scan first
 	a.StopScan()
 
+	// Get the data path from config
+	cfg := config.Get()
+	dataPath := cfg.DataPath
+
+	
 	cmd := exec.Command("docker", 
 		"run",
 		"--name", "amass-scan",
 		"--rm",
-		"-v", "C:/Projects/Cyvore/data:/data",
+		"-v", fmt.Sprintf("%s:/data", dataPath),
 		a.dockerImage,
 		"enum",
 		"-active",

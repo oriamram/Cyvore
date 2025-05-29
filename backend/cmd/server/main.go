@@ -10,8 +10,8 @@ import (
 )
 
 func main() {
-    // Load configuration
-    cfg := config.Load()
+    // Get configuration
+    cfg := config.Get()
     
     // Setup router
     r := gin.Default()
