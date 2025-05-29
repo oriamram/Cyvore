@@ -13,22 +13,57 @@ func ScanHandler(c *gin.Context) {
 		return
 	}
 
-	// Initialize the scan service
-	scanService, err := service.NewScanService()
+	// Get the scan service instance
+	scanService, err := service.GetScanService()
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to initialize scan service: " + err.Error()})
 		return
 	}
 
-	// Run both scans
-	enumOutput, err := scanService.GetDomainInfo(domain)
+	// Start the scan
+	err = scanService.GetDomainInfo(domain)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Enum scan failed: " + err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to start scan: " + err.Error()})
 		return
 	}
 
-	// Return both outputs as JSON
+	// Return success immediately
 	c.JSON(200, gin.H{
-		"enum":  enumOutput,
+		"message": "Scan started successfully",
+	})
+}
+
+// StopScanHandler handles requests to stop the running scan
+func StopScanHandler(c *gin.Context) {
+	// Get the scan service instance
+	scanService, err := service.GetScanService()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to initialize scan service: " + err.Error()})
+		return
+	}
+
+	// Stop the scan
+	err = scanService.StopScan()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to stop scan: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Scan stopped successfully",
+	})
+}
+
+// StatusHandler returns the current scan status
+func StatusHandler(c *gin.Context) {
+	// Get the scan service instance
+	scanService, err := service.GetScanService()
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to initialize scan service: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"scanning": scanService.IsScanning(),
 	})
 }

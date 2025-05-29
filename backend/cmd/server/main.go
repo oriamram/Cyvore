@@ -18,6 +18,8 @@ func main() {
 
     // Routes
     r.GET("/scan", handler.ScanHandler)
+    r.POST("/scan/stop", handler.StopScanHandler)
+    r.GET("/scan/status", handler.StatusHandler)
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "pong"})
     })
