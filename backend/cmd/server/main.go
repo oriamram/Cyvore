@@ -17,7 +17,7 @@ func main() {
     r := gin.Default()
 
     // Routes
-    r.GET("/", handler.RunScan)
+    r.GET("/scan", handler.ScanHandler)
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "pong"})
     })

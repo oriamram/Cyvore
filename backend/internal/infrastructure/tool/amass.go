@@ -1,27 +1,43 @@
 package tool
 
 import (
-	"backend/internal/model"
-	"encoding/json"
+	"fmt"
 	"os/exec"
-	"strings"
 )
 
-func RunAmass(domain string) ([]model.ScanResult, error) {
-	cmd := exec.Command("amass", "enum", "-d", domain, "-json", "-")
-	output, err := cmd.Output()
+// AmassTool provides basic domain enumeration and intelligence gathering
+type AmassTool struct {
+	dockerImage string
+}
+
+// NewAmassTool creates a new instance of AmassTool
+func NewAmassTool() (*AmassTool, error) {
+	return &AmassTool{
+		dockerImage: "caffix/amass",
+	}, nil
+}
+
+// ScanDomain performs domain enumeration with active scanning and brute forcing
+func (a *AmassTool) ScanDomain(domain string) (string, error) {
+	cmd := exec.Command("docker", 
+		"run",
+		"--name", "amass-scan",
+		"--rm",
+		"-v", "C:/Projects/Cyvore/data:/data",
+		a.dockerImage,
+		"enum",
+		"-active",
+		"-brute",
+		"-rf", "/data/resolvers.txt",
+		"-log", "/data/amass/log.txt",
+		"-o", "/data/amass/results.txt",
+		"-dir", "/data/amass",
+		"-d", domain)
+
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, err
+		return "", fmt.Errorf("amass enum error: %v\nOutput: %s", err, string(output))
 	}
 
-	decoder := json.NewDecoder(strings.NewReader(string(output)))
-	var results []model.ScanResult
-	for decoder.More() {
-		var entry model.ScanResult
-		err := decoder.Decode(&entry)
-		if err == nil {
-			results = append(results, entry)
-		}
-	}
-	return results, nil
+	return string(output), nil
 }
