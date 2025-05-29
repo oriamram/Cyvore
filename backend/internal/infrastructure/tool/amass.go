@@ -48,7 +48,6 @@ func (a *AmassTool) ScanDomain(domain string) error {
 	cfg := config.Get()
 	dataPath := cfg.DataPath
 
-	
 	cmd := exec.Command("docker", 
 		"run",
 		"--name", "amass-scan",

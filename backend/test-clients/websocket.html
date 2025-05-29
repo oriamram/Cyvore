@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Amass WebSocket Test Client</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			#status {
+				padding: 10px;
+				margin-bottom: 20px;
+				border-radius: 4px;
+			}
+			.connected {
+				background-color: #d4edda;
+				color: #155724;
+			}
+			.disconnected {
+				background-color: #f8d7da;
+				color: #721c24;
+			}
+			.data-container {
+				display: flex;
+				gap: 20px;
+			}
+			.data-section {
+				flex: 1;
+				border: 1px solid #ddd;
+				padding: 15px;
+				border-radius: 4px;
+			}
+			.data-section h2 {
+				margin-top: 0;
+			}
+			.controls {
+				margin-bottom: 15px;
+				padding: 10px;
+				background-color: #f8f9fa;
+				border-radius: 4px;
+			}
+			.controls input,
+			.controls select {
+				margin-right: 10px;
+				padding: 5px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+			}
+			.pagination {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				margin-top: 10px;
+			}
+			.pagination button {
+				padding: 5px 10px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				background-color: white;
+				cursor: pointer;
+			}
+			.pagination button:disabled {
+				background-color: #f8f9fa;
+				cursor: not-allowed;
+			}
+			pre {
+				background-color: #f8f9fa;
+				padding: 10px;
+				border-radius: 4px;
+				overflow-x: auto;
+				max-height: 500px;
+				overflow-y: auto;
+			}
+			.timestamp {
+				color: #666;
+				font-size: 0.8em;
+				margin-bottom: 10px;
+			}
+			.total-count {
+				color: #666;
+				font-size: 0.9em;
+				margin-bottom: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Amass WebSocket Test Client</h1>
+		<div id="status" class="disconnected">Disconnected</div>
+
+		<div class="data-container">
+			<div class="data-section">
+				<h2>Assets</h2>
+				<div class="controls">
+					<input type="text" id="assetFilter" placeholder="Filter content..." />
+					<select id="assetType">
+						<option value="">All Types</option>
+						<option value="FQDN">FQDN</option>
+						<option value="IPAddress">IP Address</option>
+						<option value="Netblock">Netblock</option>
+						<option value="ASN">ASN</option>
+						<option value="RIROrganization">RIR Organization</option>
+					</select>
+					<select id="assetPageSize">
+						<option value="10">10 per page</option>
+						<option value="50" selected>50 per page</option>
+						<option value="100">100 per page</option>
+					</select>
+				</div>
+				<div class="total-count">Total: <span id="assetTotal">0</span> assets</div>
+				<div class="timestamp">Last update: Never</div>
+				<pre id="assets">No data yet</pre>
+				<div class="pagination">
+					<button id="assetPrevPage" disabled>Previous</button>
+					<span id="assetPageInfo">Page 1</span>
+					<button id="assetNextPage">Next</button>
+				</div>
+			</div>
+			<div class="data-section">
+				<h2>Relations</h2>
+				<div class="controls">
+					<select id="relationType">
+						<option value="">All Types</option>
+						<option value="a_record">A Record</option>
+						<option value="aaaa_record">AAAA Record</option>
+						<option value="mx_record">MX Record</option>
+						<option value="ns_record">NS Record</option>
+						<option value="contains">Contains</option>
+						<option value="managed_by">Managed By</option>
+						<option value="announces">Announces</option>
+					</select>
+					<select id="relationPageSize">
+						<option value="10">10 per page</option>
+						<option value="50" selected>50 per page</option>
+						<option value="100">100 per page</option>
+					</select>
+				</div>
+				<div class="total-count">Total: <span id="relationTotal">0</span> relations</div>
+				<div class="timestamp">Last update: Never</div>
+				<pre id="relations">No data yet</pre>
+				<div class="pagination">
+					<button id="relationPrevPage" disabled>Previous</button>
+					<span id="relationPageInfo">Page 1</span>
+					<button id="relationNextPage">Next</button>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			let ws;
+			let clientState = {
+				assetPage: 1,
+				assetPageSize: 50,
+				assetType: "",
+				assetFilter: "",
+				relationPage: 1,
+				relationPageSize: 50,
+				relationType: "",
+			};
+
+			function connect() {
+				ws = new WebSocket("ws://localhost:8081/ws");
+
+				ws.onopen = () => {
+					statusDiv.textContent = "Connected";
+					statusDiv.className = "connected";
+					sendState();
+				};
+
+				ws.onclose = () => {
+					statusDiv.textContent = "Disconnected - Reconnecting...";
+					statusDiv.className = "disconnected";
+					setTimeout(connect, 5000);
+				};
+
+				ws.onerror = (error) => {
+					console.error("WebSocket error:", error);
+					statusDiv.textContent = "Error: " + error.message;
+					statusDiv.className = "disconnected";
+				};
+
+				ws.onmessage = (event) => {
+					const data = JSON.parse(event.data);
+
+					// Update assets
+					assetsPre.textContent = JSON.stringify(data.assets, null, 2);
+					updateTimestamp(assetsTimestamp);
+					document.getElementById("assetTotal").textContent = data.total.assets;
+					updatePagination("asset", data.total.assets);
+
+					// Update relations
+					relationsPre.textContent = JSON.stringify(data.relations, null, 2);
+					updateTimestamp(relationsTimestamp);
+					document.getElementById("relationTotal").textContent = data.total.relations;
+					updatePagination("relation", data.total.relations);
+				};
+			}
+
+			function sendState() {
+				if (ws.readyState === WebSocket.OPEN) {
+					ws.send(JSON.stringify(clientState));
+				}
+			}
+
+			function updatePagination(type, total) {
+				const pageSize = clientState[`${type}PageSize`];
+				const currentPage = clientState[`${type}Page`];
+				const totalPages = Math.ceil(total / pageSize);
+
+				document.getElementById(`${type}PageInfo`).textContent = `Page ${currentPage} of ${totalPages}`;
+				document.getElementById(`${type}PrevPage`).disabled = currentPage <= 1;
+				document.getElementById(`${type}NextPage`).disabled = currentPage >= totalPages;
+			}
+
+			function updateTimestamp(element) {
+				const now = new Date();
+				element.textContent = `Last update: ${now.toLocaleTimeString()}`;
+			}
+
+			// Initialize elements
+			const statusDiv = document.getElementById("status");
+			const assetsPre = document.getElementById("assets");
+			const relationsPre = document.getElementById("relations");
+			const assetsTimestamp = document.querySelector(".data-section:nth-child(1) .timestamp");
+			const relationsTimestamp = document.querySelector(".data-section:nth-child(2) .timestamp");
+
+			// Set up event listeners
+			document.getElementById("assetFilter").addEventListener("input", (e) => {
+				clientState.assetFilter = e.target.value;
+				clientState.assetPage = 1;
+				sendState();
+			});
+
+			document.getElementById("assetType").addEventListener("change", (e) => {
+				clientState.assetType = e.target.value;
+				clientState.assetPage = 1;
+				sendState();
+			});
+
+			document.getElementById("assetPageSize").addEventListener("change", (e) => {
+				clientState.assetPageSize = parseInt(e.target.value);
+				clientState.assetPage = 1;
+				sendState();
+			});
+
+			document.getElementById("relationType").addEventListener("change", (e) => {
+				clientState.relationType = e.target.value;
+				clientState.relationPage = 1;
+				sendState();
+			});
+
+			document.getElementById("relationPageSize").addEventListener("change", (e) => {
+				clientState.relationPageSize = parseInt(e.target.value);
+				clientState.relationPage = 1;
+				sendState();
+			});
+
+			document.getElementById("assetPrevPage").addEventListener("click", () => {
+				if (clientState.assetPage > 1) {
+					clientState.assetPage--;
+					sendState();
+				}
+			});
+
+			document.getElementById("assetNextPage").addEventListener("click", () => {
+				clientState.assetPage++;
+				sendState();
+			});
+
+			document.getElementById("relationPrevPage").addEventListener("click", () => {
+				if (clientState.relationPage > 1) {
+					clientState.relationPage--;
+					sendState();
+				}
+			});
+
+			document.getElementById("relationNextPage").addEventListener("click", () => {
+				clientState.relationPage++;
+				sendState();
+			});
+
+			// Start connection
+			connect();
+		</script>
+	</body>
+</html>

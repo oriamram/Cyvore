@@ -15,11 +15,13 @@ func main() {
     
     // Setup router
     r := gin.Default()
+    log.Printf("Running Amass with data path: %s", cfg.DataPath)
 
     // Routes
     r.GET("/scan", handler.ScanHandler)
     r.POST("/scan/stop", handler.StopScanHandler)
     r.GET("/scan/status", handler.StatusHandler)
+    r.GET("/amass/data", handler.AmassDataHandler)
     r.GET("/ping", func(c *gin.Context) {
         c.JSON(200, gin.H{"message": "pong"})
     })

@@ -28,27 +28,35 @@ func Get() *Config {
 }
 
 func Load() *Config {
-    // Try to load .env file (don't fail if it doesn't exist)
-    err := godotenv.Load("../../.env")
+    _ = godotenv.Load("../../.env") // Still optional
+
+    // Try to walk upward to find the .git folder or backend folder (project root)
+    cwd, err := os.Getwd()
     if err != nil {
-        log.Println("No .env file found, using environment variables and defaults")
+        log.Fatal("Failed to get current working directory")
     }
-    
-    // Get the absolute path to the data directory
-    dataPath := getEnv("DATA_PATH", "data")
-    absDataPath, err := filepath.Abs(dataPath)
-    if err != nil {
-        log.Printf("Warning: Could not resolve absolute path for data directory: %v", err)
-        absDataPath = dataPath
+
+    // Traverse until we find the project root
+    projectRoot := cwd
+    for i := 0; i < 5; i++ {
+        if _, err := os.Stat(filepath.Join(projectRoot, "backend", "data")); err == nil {
+            break
+        }
+        projectRoot = filepath.Dir(projectRoot)
     }
-    
+
+    // Default fallback
+    dataPath := filepath.Join(projectRoot, "backend", "data")
+    if override := os.Getenv("DATA_PATH"); override != "" {
+        dataPath = override
+    }
+
     return &Config{
         Port:     getEnv("PORT", "4000"),
-        DataPath: absDataPath,
-        // DBHost: getEnv("DB_HOST", "localhost"),
-        // JWTSecret: getEnv("JWT_SECRET", "your-secret-key"),
+        DataPath: dataPath,
     }
 }
+
 
 // Helper function to get environment variable with default
 func getEnv(key, defaultValue string) string {
