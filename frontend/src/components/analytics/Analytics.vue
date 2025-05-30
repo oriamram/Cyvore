@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AnalyticsCard from "./AnalyticsCard.vue";
 import { Radar, Database, Wifi } from "lucide-vue-next";
-import { getSystemStatus } from "@/api/scanService";
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import wsService from "@/services/websocket";
+import { ScanService } from "@/services/scanService";
 
 // Define your cards list
 const cards = ref([
@@ -37,7 +37,7 @@ let statusInterval: number;
 
 const fetchStatus = async () => {
 	try {
-		const status = await getSystemStatus();
+		const status = await ScanService.getInstance().getStatus();
 		cards.value[1].content = status.scanning ? "Active" : "Sleeping";
 		cards.value[1].contentColor = status.scanning ? "text-green-700" : "text-yellow-600";
 	} catch (error) {

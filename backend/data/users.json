@@ -1,0 +1,18 @@
+{
+  "oriamram": {
+    "id": "Wj_8etdKkYTJ8WR5w1Db7Q==",
+    "username": "oriamram",
+    "password": "$2a$10$z2arfGxdEJ6SB6AJ9vSnc.exRviiNerD5gbAjwhK0O4veKTC6EENy",
+    "email": "oriamram123@gmail.com",
+    "created_at": "2025-05-30T20:54:44.9173241+03:00",
+    "updated_at": "2025-05-30T20:54:44.9173241+03:00"
+  },
+  "testing": {
+    "id": "KiIVrcdEBUJ9KtejYBjPgg==",
+    "username": "testing",
+    "password": "$2a$10$Uc98aFM1f3DJ/DfGd5J./u2/1W/mDTSqMl2NWk5XMiy7ipJma/nrC",
+    "email": "oriamram1@gmail.com",
+    "created_at": "2025-05-30T20:32:06.6935888+03:00",
+    "updated_at": "2025-05-30T20:32:06.6935888+03:00"
+  }
+}
