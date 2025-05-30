@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import logo from "@/assets/logo.png";
 import { ScrollText } from "lucide-vue-next";
-import SearchBar from "@/components/SearchBar.vue";
-import Button from "./ui/button/Button.vue";
+import SearchBar from "@/components/header/SearchBar.vue";
+import Button from "../ui/button/Button.vue";
 </script>
 
 <template>
