@@ -14,7 +14,7 @@ const props = defineProps<{
 </script>
 
 <template>
-	<Card class="w-[200px] flex flex-col justify-center gap-2 p-4 bg-white/90">
+	<Card class="md:w-[200px] flex flex-col justify-center gap-2 p-4 bg-white/90">
 		<CardHeader class="flex items-baseline p-0">
 			<div>
 				<component :is="props.icon" class="w-6 h-6 text-gray-500" />
@@ -23,7 +23,7 @@ const props = defineProps<{
 		</CardHeader>
 
 		<CardContent class="p-0">
-			<div :class="['text-2xl font-bold', props.contentColor ?? 'text-neutral-900']">
+			<div :class="['md:text-2xl text-xl font-bold', props.contentColor ?? 'text-neutral-900']">
 				{{ props.content }}
 			</div>
 		</CardContent>

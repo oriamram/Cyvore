@@ -26,10 +26,10 @@ const handleScanClick = async () => {
 </script>
 
 <template>
-	<div class="bg-white rounded-full flex items-center p-1 gap-3 w-1/4">
-		<Input class="rounded-full border-none !ring-0 font-medium !text-xl" type="text" v-model="searchValue" placeholder="cyvore.com" />
-		<Button class="rounded-full w-10 h-10 bg-primary" @click="handleScanClick">
-			<Eye class="text-white -scale-x-[100%]" />
+	<div class="bg-white rounded-full flex items-center p-1 gap-2 md:gap-3 w-full md:w-1/2 lg:w-1/3">
+		<Input class="rounded-full border-none !ring-0 font-medium !text-base md:!text-xl" type="text" v-model="searchValue" placeholder="cyvore.com" />
+		<Button class="rounded-full w-8 h-8 md:w-10 md:h-10 bg-primary" @click="handleScanClick">
+			<Eye class="text-white -scale-x-[100%] w-4 h-4 md:w-5 md:h-5" />
 		</Button>
 	</div>
 </template>

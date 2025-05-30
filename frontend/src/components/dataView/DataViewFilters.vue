@@ -36,33 +36,39 @@ const resetFilters = () => {
 	selectedType.value = "";
 	if (props.type === "assets") {
 		wsService.assetType.value = "";
+		wsService.sortColumn.value = "";
+		wsService.sortDirection.value = "desc";
 	} else {
 		wsService.relationType.value = "";
+		wsService.sortColumn.value = "";
+		wsService.sortDirection.value = "desc";
 	}
 	wsService.requestPage(props.type === "assets" ? 1 : undefined, props.type === "relations" ? 1 : undefined);
 };
 </script>
 
 <template>
-	<div class="flex-1">
-		<Select v-model="selectedType" @update:modelValue="handleTypeChange">
-			<SelectTrigger class="w-full bg-white">
-				<SelectValue :placeholder="`Filter by ${type.slice(0, -1)} type`" />
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
-					<SelectLabel class="text-xs font-medium text-gray-500 uppercase tracking-wider"> {{ type.slice(0, -1) }} Types </SelectLabel>
-					<SelectItem v-for="type in getTypes()" :key="type" :value="type" class="text-sm">
-						{{ type }}
-					</SelectItem>
-				</SelectGroup>
-			</SelectContent>
-		</Select>
+	<div class="flex flex-col sm:flex-row gap-2 w-full">
+		<div class="flex-1">
+			<Select v-model="selectedType" @update:modelValue="handleTypeChange">
+				<SelectTrigger class="w-full bg-white text-sm md:text-base">
+					<SelectValue :placeholder="`Filter by ${type.slice(0, -1)} type`" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						<SelectLabel class="text-xs font-medium text-gray-500 uppercase tracking-wider"> {{ type.slice(0, -1) }} Types </SelectLabel>
+						<SelectItem v-for="type in getTypes()" :key="type" :value="type" class="text-sm">
+							{{ type }}
+						</SelectItem>
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		</div>
+		<Button
+			@click="resetFilters"
+			class="w-full sm:w-auto px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+		>
+			Reset
+		</Button>
 	</div>
-	<Button
-		@click="resetFilters"
-		class="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
-	>
-		Reset
-	</Button>
 </template>

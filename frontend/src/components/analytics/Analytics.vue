@@ -43,26 +43,21 @@ const fetchStatus = async () => {
 	}
 };
 
-// Watch WebSocket connection status
+// Update WebSocket status
 const updateWebSocketStatus = () => {
 	cards.value[0].content = wsService.isConnected.value ? "Connected" : "Disconnected";
 	cards.value[0].contentColor = wsService.isConnected.value ? "text-green-700" : "text-red-700";
 };
 
-// Watch for changes in WebSocket connection status
 watch(() => wsService.isConnected.value, updateWebSocketStatus);
 
 onMounted(() => {
-	// Initial fetch
 	fetchStatus();
-	// Set up interval for polling
 	statusInterval = window.setInterval(fetchStatus, 5000);
-	// Initial WebSocket status
 	updateWebSocketStatus();
 });
 
 onUnmounted(() => {
-	// Clean up interval when component is unmounted
 	if (statusInterval) {
 		clearInterval(statusInterval);
 	}
@@ -70,9 +65,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="flex flex-col gap-4">
-		<div class="w-full flex items-center justify-between gap-4 p-4">
-			<AnalyticsCard v-for="(card, index) in cards" :key="index" :title="card.title" :content="card.content" :icon="card.icon" :contentColor="card.contentColor" />
-		</div>
+	<div class="max-md:w-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+		<AnalyticsCard v-for="(card, index) in cards" :key="index" :title="card.title" :content="card.content" :icon="card.icon" :contentColor="card.contentColor" />
 	</div>
 </template>

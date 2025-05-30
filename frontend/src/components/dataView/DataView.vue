@@ -63,22 +63,23 @@ const selectedTab = ref<"assets" | "relations">("assets");
 
 <template>
 	<Tabs v-model="selectedTab" default-value="assets" class="w-full gap-0">
-		<div class="flex items-center justify-between mb-4">
-			<div class="flex items-center gap-4">
-				<TabsList>
+		<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+			<div class="flex flex-col md:flex-row items-start md:items-center gap-4 w-full md:w-auto">
+				<TabsList class="w-full md:w-auto">
 					<TabsTrigger value="assets">Assets</TabsTrigger>
 					<TabsTrigger value="relations">Relations</TabsTrigger>
 				</TabsList>
-				<DataViewFilters :type="selectedTab" />
+				<DataViewFilters :type="selectedTab" class="w-full md:w-auto" />
 			</div>
-			<CustomPagination :type="selectedTab" />
+			<CustomPagination :type="selectedTab" class="w-full max-md:hidden" />
 		</div>
 
-		<TabsContent value="assets">
+		<TabsContent value="assets" class="overflow-x-auto">
 			<DataViewTable :columns="assetColumns" :data="assets" empty-message="No assets available" />
 		</TabsContent>
-		<TabsContent value="relations">
+		<TabsContent value="relations" class="overflow-x-auto">
 			<DataViewTable :columns="relationColumns" :data="relations" empty-message="No relations available" />
 		</TabsContent>
 	</Tabs>
+	<CustomPagination :type="selectedTab" class="w-full md:hidden" />
 </template>
