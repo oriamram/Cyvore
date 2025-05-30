@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	"time"
 
-	"backend/internal/models"
+	"backend/internal/model"
 	"backend/internal/storage"
 
 	"golang.org/x/crypto/bcrypt"
@@ -26,7 +26,7 @@ func NewUserService() (*UserService, error) {
 	}, nil
 }
 
-func (s *UserService) Register(reg models.UserRegistration) error {
+func (s *UserService) Register(reg model.UserRegistration) error {
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(reg.Password), bcrypt.DefaultCost)
 	if err != nil {
@@ -34,7 +34,7 @@ func (s *UserService) Register(reg models.UserRegistration) error {
 	}
 
 	// Create user
-	user := &models.User{
+	user := &model.User{
 		ID:        generateID(),
 		Username:  reg.Username,
 		Password:  string(hashedPassword),
@@ -47,7 +47,7 @@ func (s *UserService) Register(reg models.UserRegistration) error {
 	return s.storage.CreateUser(user)
 }
 
-func (s *UserService) Login(login models.UserLogin) (*models.User, error) {
+func (s *UserService) Login(login model.UserLogin) (*model.User, error) {
 	// Get user
 	user, err := s.storage.GetUser(login.Username)
 	if err != nil {
@@ -56,7 +56,7 @@ func (s *UserService) Login(login models.UserLogin) (*models.User, error) {
 
 	// Verify password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(login.Password)); err != nil {
-		return nil, models.ErrInvalidPassword
+		return nil, model.ErrInvalidPassword
 	}
 
 	return user, nil

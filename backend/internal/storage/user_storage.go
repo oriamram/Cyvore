@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 	"sync"
 
-	"backend/internal/models"
+	"backend/internal/model"
 )
 
 type UserStorage struct {
 	mu    sync.RWMutex
-	users map[string]*models.User
+	users map[string]*model.User
 	path  string
 }
 
@@ -23,7 +23,7 @@ func NewUserStorage() (*UserStorage, error) {
 	}
 
 	storage := &UserStorage{
-		users: make(map[string]*models.User),
+		users: make(map[string]*model.User),
 		path:  filepath.Join(dataDir, "users.json"),
 	}
 
@@ -70,13 +70,13 @@ func (s *UserStorage) save() error {
 	return os.WriteFile(s.path, data, 0644)
 }
 
-func (s *UserStorage) CreateUser(user *models.User) error {
+func (s *UserStorage) CreateUser(user *model.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	// Check if user already exists
 	if _, exists := s.users[user.Username]; exists {
-		return models.ErrUserAlreadyExists
+		return model.ErrUserAlreadyExists
 	}
 
 	// Add user to map
@@ -86,25 +86,25 @@ func (s *UserStorage) CreateUser(user *models.User) error {
 	return s.save()
 }
 
-func (s *UserStorage) GetUser(username string) (*models.User, error) {
+func (s *UserStorage) GetUser(username string) (*model.User, error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
 	user, exists := s.users[username]
 	if !exists {
-		return nil, models.ErrUserNotFound
+		return nil, model.ErrUserNotFound
 	}
 
 	return user, nil
 }
 
-func (s *UserStorage) UpdateUser(user *models.User) error {
+func (s *UserStorage) UpdateUser(user *model.User) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	// Check if user exists
 	if _, exists := s.users[user.Username]; !exists {
-		return models.ErrUserNotFound
+		return model.ErrUserNotFound
 	}
 
 	// Update user

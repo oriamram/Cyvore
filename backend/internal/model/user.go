@@ -1,4 +1,4 @@
-package models
+package model
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ var (
 type User struct {
 	ID        string    `json:"id"`
 	Username  string    `json:"username"`
-	Password  string    `json:"password"` // This will store the hashed password
+	Password  string    `json:"password"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`

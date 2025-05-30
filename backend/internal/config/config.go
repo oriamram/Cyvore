@@ -12,8 +12,6 @@ type Config struct {
 	Port      string
 	DataPath  string
 	JWTSecret string
-	// Add other config fields as needed
-	// DBHost string
 }
 
 // Global configuration instance

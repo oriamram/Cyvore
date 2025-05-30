@@ -18,7 +18,7 @@ var (
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
-			return true // Allow all origins for now
+			return true
 		},
 	}
 
@@ -281,7 +281,6 @@ func formatAssetContent(content string) string {
 	return content
 }
 
-// Add this function to monitor database changes
 func monitorDatabaseChanges() {
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()

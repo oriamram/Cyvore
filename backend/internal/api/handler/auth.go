@@ -4,9 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	"backend/internal/api/response"
 	"backend/internal/auth"
-	"backend/internal/models"
+	"backend/internal/model"
 	"backend/internal/service"
 
 	"github.com/gin-gonic/gin"
@@ -24,46 +23,46 @@ func init() {
 
 // Register handles user registration
 func Register(c *gin.Context) {
-	var reg models.UserRegistration
+	var reg model.UserRegistration
 	if err := c.ShouldBindJSON(&reg); err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	if err := userService.Register(reg); err != nil {
-		if err == models.ErrUserAlreadyExists {
-			response.Error(c, http.StatusConflict, "Username already exists")
+		if err == model.ErrUserAlreadyExists {
+			c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
 			return
 		}
-		response.Error(c, http.StatusInternalServerError, "Failed to register user")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}
 
-	response.Success(c, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
 }
 
 // SignIn handles user authentication
 func SignIn(c *gin.Context) {
-	var login models.UserLogin
+	var login model.UserLogin
 	if err := c.ShouldBindJSON(&login); err != nil {
-		response.Error(c, http.StatusBadRequest, "Invalid request body")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
 	user, err := userService.Login(login)
 	if err != nil {
-		if err == models.ErrUserNotFound || err == models.ErrInvalidPassword {
-			response.Error(c, http.StatusUnauthorized, "Invalid username or password")
+		if err == model.ErrUserNotFound || err == model.ErrInvalidPassword {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
 			return
 		}
-		response.Error(c, http.StatusInternalServerError, "Failed to authenticate user")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to authenticate user"})
 		return
 	}
 
 	// Generate token pair
 	tokens, err := auth.GenerateTokenPair(user.ID)
 	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "Failed to generate tokens")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
 		return
 	}
 
@@ -78,7 +77,7 @@ func SignIn(c *gin.Context) {
 		true,  // httpOnly
 	)
 
-	response.Success(c, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"access_token": tokens.AccessToken,
 		"user": gin.H{
 			"id":       user.ID,
@@ -101,7 +100,7 @@ func SignOut(c *gin.Context) {
 		true,  // httpOnly
 	)
 
-	response.Success(c, gin.H{"message": "Signed out successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Signed out successfully"})
 }
 
 // RefreshToken handles token refresh requests
@@ -109,21 +108,21 @@ func RefreshToken(c *gin.Context) {
 	// Get refresh token from cookie
 	refreshToken, err := c.Cookie("refresh_token")
 	if err != nil {
-		response.Error(c, http.StatusUnauthorized, "Refresh token not found")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
 		return
 	}
 
 	// Validate refresh token
 	claims, err := auth.ValidateToken(refreshToken)
 	if err != nil {
-		response.Error(c, http.StatusUnauthorized, "Invalid refresh token")
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
 		return
 	}
 
 	// Generate new token pair
 	tokens, err := auth.GenerateTokenPair(claims.UserID)
 	if err != nil {
-		response.Error(c, http.StatusInternalServerError, "Failed to generate tokens")
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
 		return
 	}
 
@@ -138,7 +137,7 @@ func RefreshToken(c *gin.Context) {
 		true,  // httpOnly
 	)
 
-	response.Success(c, gin.H{
+	c.JSON(http.StatusOK, gin.H{
 		"access_token": tokens.AccessToken,
 	})
 } 

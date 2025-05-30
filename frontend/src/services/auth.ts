@@ -1,7 +1,7 @@
 import { AuthResponse, LoginRequest, RegisterRequest, ApiResponse } from "../types/auth";
 
 const API_URL = "http://localhost:4000";
-const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000; // 55 minutes in milliseconds (refresh before 1-hour expiration)
+const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000;
 
 export class AuthService {
 	private static instance: AuthService;
@@ -125,7 +125,7 @@ export class AuthService {
 		try {
 			const response = await fetch(`${API_URL}/auth/signout`, {
 				method: "POST",
-				credentials: "include", // Important for cookies
+				credentials: "include",
 			});
 
 			const result = await response.json();
