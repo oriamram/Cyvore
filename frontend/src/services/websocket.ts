@@ -27,6 +27,10 @@ class WebSocketService {
 	public totalRelationPages = ref(0);
 	public sortColumn = ref("");
 	public sortDirection = ref<"asc" | "desc">("asc");
+	public assetType = ref("");
+	public assetFilter = ref("");
+	public relationType = ref("");
+	public relationFilter = ref("");
 
 	constructor(private url: string) {}
 
@@ -85,11 +89,12 @@ class WebSocketService {
 			const state = {
 				assetPage: this.currentAssetPage.value,
 				assetPageSize: this.PAGE_SIZE,
-				assetType: "",
-				assetFilter: "",
+				assetType: this.assetType.value,
+				assetFilter: this.assetFilter.value,
 				relationPage: this.currentRelationPage.value,
 				relationPageSize: this.PAGE_SIZE,
-				relationType: "",
+				relationType: this.relationType.value,
+				relationFilter: this.relationFilter.value,
 				sortColumn: this.sortColumn.value,
 				sortDirection: this.sortDirection.value,
 			};
@@ -132,11 +137,14 @@ class WebSocketService {
 			const state = {
 				assetPage: this.currentAssetPage.value,
 				assetPageSize: this.PAGE_SIZE,
-				assetType: "",
-				assetFilter: "",
+				assetType: this.assetType.value,
+				assetFilter: this.assetFilter.value,
 				relationPage: this.currentRelationPage.value,
 				relationPageSize: this.PAGE_SIZE,
-				relationType: "",
+				relationType: this.relationType.value,
+				relationFilter: this.relationFilter.value,
+				sortColumn: this.sortColumn.value,
+				sortDirection: this.sortDirection.value,
 			};
 			this.ws.send(JSON.stringify(state));
 		} else {

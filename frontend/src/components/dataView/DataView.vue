@@ -3,6 +3,7 @@ import wsService from "@/services/websocket";
 import DataViewTable from "./DataViewTable.vue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CustomPagination from "./DataViewPagination.vue";
+import DataViewFilters from "./DataViewFilters.vue";
 
 interface Asset {
 	id: string;
@@ -63,11 +64,13 @@ const selectedTab = ref<"assets" | "relations">("assets");
 <template>
 	<Tabs v-model="selectedTab" default-value="assets" class="w-full gap-0">
 		<div class="flex items-center justify-between mb-4">
-			<TabsList>
-				<TabsTrigger value="assets">Assets</TabsTrigger>
-				<TabsTrigger value="relations">Relations</TabsTrigger>
-			</TabsList>
-
+			<div class="flex items-center gap-4">
+				<TabsList>
+					<TabsTrigger value="assets">Assets</TabsTrigger>
+					<TabsTrigger value="relations">Relations</TabsTrigger>
+				</TabsList>
+				<DataViewFilters :type="selectedTab" />
+			</div>
 			<CustomPagination :type="selectedTab" />
 		</div>
 
