@@ -2,8 +2,9 @@ package auth
 
 import (
 	"errors"
-	"os"
 	"time"
+
+	"backend/internal/config"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -25,11 +26,9 @@ type TokenPair struct {
 
 // GenerateTokenPair generates a new access token and refresh token pair
 func GenerateTokenPair(userID string) (*TokenPair, error) {
-	// Get JWT secret from environment variable
-	secret := []byte(os.Getenv("JWT_SECRET"))
-	if len(secret) == 0 {
-		secret = []byte("your-256-bit-secret") // Fallback secret, should be changed in production
-	}
+	// Get JWT secret from config
+	cfg := config.Get()
+	secret := []byte(cfg.JWTSecret)
 
 	// Create access token
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
@@ -68,10 +67,9 @@ func GenerateTokenPair(userID string) (*TokenPair, error) {
 
 // ValidateToken validates a JWT token and returns the claims
 func ValidateToken(tokenString string) (*Claims, error) {
-	secret := []byte(os.Getenv("JWT_SECRET"))
-	if len(secret) == 0 {
-		secret = []byte("your-256-bit-secret") // Fallback secret, should be changed in production
-	}
+	// Get JWT secret from config
+	cfg := config.Get()
+	secret := []byte(cfg.JWTSecret)
 
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return secret, nil

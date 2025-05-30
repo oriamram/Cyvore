@@ -2,6 +2,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableEmpty } from "@/components/ui/table";
 import { ArrowUpDown } from "lucide-vue-next";
 import wsService from "@/services/websocket";
+import { ref, watch } from "vue";
 
 interface Column {
 	key: string;
@@ -16,7 +17,8 @@ interface Props {
 	emptyMessage?: string;
 }
 
-defineProps<Props>();
+const props = defineProps<Props>();
+const highlightRow = ref<Set<string>>(new Set());
 
 const getFormattedValue = (row: any, column: Column) => {
 	const value = row[column.key];
@@ -39,6 +41,30 @@ const getSortIcon = (column: Column) => {
 	}
 	return wsService.sortDirection.value === "asc" ? ArrowUpDown : ArrowUpDown;
 };
+
+// Watch for changes in data and highlight new rows
+watch(
+	() => props.data,
+	(newData, oldData) => {
+		if (!oldData) return;
+
+		// Find new rows by comparing IDs
+		const oldIds = new Set(oldData.map((row) => row.id));
+		const newIds = new Set(newData.map((row) => row.id));
+
+		// Add new IDs to highlight set
+		newIds.forEach((id) => {
+			if (!oldIds.has(id)) {
+				highlightRow.value.add(id);
+				// Remove highlight after animation
+				setTimeout(() => {
+					highlightRow.value.delete(id);
+				}, 2000);
+			}
+		});
+	},
+	{ deep: true }
+);
 </script>
 
 <template>
@@ -60,7 +86,12 @@ const getSortIcon = (column: Column) => {
 				</TableRow>
 			</TableHeader>
 			<TableBody>
-				<TableRow v-for="row in data" :key="row.id" class="bg-neutral-100 rounded-xl shadow-sm hover:bg-neutral-200 transition">
+				<TableRow
+					v-for="row in data"
+					:key="row.id"
+					class="bg-neutral-100 rounded-xl shadow-sm hover:bg-neutral-200 transition"
+					:class="{ 'animate-highlight': highlightRow.has(row.id) }"
+				>
 					<TableCell
 						v-for="column in columns"
 						:key="column.key"
@@ -76,3 +107,18 @@ const getSortIcon = (column: Column) => {
 		</Table>
 	</div>
 </template>
+
+<style scoped>
+@keyframes highlight {
+	0% {
+		background-color: rgb(34 197 94 / 0.2);
+	}
+	100% {
+		background-color: rgb(243 244 246);
+	}
+}
+
+.animate-highlight {
+	animation: highlight 2s ease-out;
+}
+</style>

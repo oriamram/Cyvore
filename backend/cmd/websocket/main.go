@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	_ "modernc.org/sqlite"
@@ -21,9 +22,14 @@ var (
 		},
 	}
 
-	// Store all active connections
-	clients = make(map[*websocket.Conn]bool)
+	// Store all active connections and their states
+	clients = make(map[*websocket.Conn]*ClientState)
 	clientsMutex sync.RWMutex
+
+	// Add these variables to track last update times
+	lastAssetCount    int
+	lastRelationCount int
+	lastUpdateMutex   sync.RWMutex
 )
 
 type Asset struct {
@@ -73,9 +79,17 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Initialize client state
+	initialState := &ClientState{
+		AssetPage:     1,
+		AssetPageSize: 50,
+		RelationPage:  1,
+		RelationPageSize: 50,
+	}
+
 	// Add client to the map with initial state
 	clientsMutex.Lock()
-	clients[conn] = true
+	clients[conn] = initialState
 	clientsMutex.Unlock()
 
 	// Remove client when they disconnect
@@ -87,12 +101,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Send initial data
-	if err := sendCurrentData(conn, ClientState{
-		AssetPage:     1,
-		AssetPageSize: 50,
-		RelationPage:  1,
-		RelationPageSize: 50,
-	}); err != nil {
+	if err := sendCurrentData(conn, initialState); err != nil {
 		log.Printf("Failed to send initial data: %v", err)
 		return
 	}
@@ -110,14 +119,19 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 
-		if err := sendCurrentData(conn, state); err != nil {
+		// Update client's state
+		clientsMutex.Lock()
+		clients[conn] = &state
+		clientsMutex.Unlock()
+
+		if err := sendCurrentData(conn, &state); err != nil {
 			log.Printf("Failed to send data: %v", err)
 			break
 		}
 	}
 }
 
-func sendCurrentData(conn *websocket.Conn, state ClientState) error {
+func sendCurrentData(conn *websocket.Conn, state *ClientState) error {
 	db, err := sql.Open("sqlite", "data/amass/amass.sqlite")
 	if err != nil {
 		return err
@@ -267,7 +281,79 @@ func formatAssetContent(content string) string {
 	return content
 }
 
+// Add this function to monitor database changes
+func monitorDatabaseChanges() {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		db, err := sql.Open("sqlite", "data/amass/amass.sqlite")
+		if err != nil {
+			log.Printf("Failed to open database: %v", err)
+			continue
+		}
+
+		// Get current counts
+		var currentAssetCount, currentRelationCount int
+		err = db.QueryRow("SELECT COUNT(*) FROM assets").Scan(&currentAssetCount)
+		if err != nil {
+			log.Printf("Failed to get asset count: %v", err)
+			db.Close()
+			continue
+		}
+		err = db.QueryRow("SELECT COUNT(*) FROM relations").Scan(&currentRelationCount)
+		if err != nil {
+			log.Printf("Failed to get relation count: %v", err)
+			db.Close()
+			continue
+		}
+
+		// Check if counts have changed
+		lastUpdateMutex.RLock()
+		assetsChanged := currentAssetCount != lastAssetCount
+		relationsChanged := currentRelationCount != lastRelationCount
+		lastUpdateMutex.RUnlock()
+
+		if assetsChanged || relationsChanged {
+			// Update last counts
+			lastUpdateMutex.Lock()
+			lastAssetCount = currentAssetCount
+			lastRelationCount = currentRelationCount
+			lastUpdateMutex.Unlock()
+
+			// Broadcast update to all clients
+			clientsMutex.RLock()
+			for client, state := range clients {
+				// Send updated data using client's current state
+				if err := sendCurrentData(client, state); err != nil {
+					log.Printf("Failed to send update to client: %v", err)
+					// Remove disconnected client
+					clientsMutex.RUnlock()
+					clientsMutex.Lock()
+					delete(clients, client)
+					clientsMutex.Unlock()
+					clientsMutex.RLock()
+				}
+			}
+			clientsMutex.RUnlock()
+		}
+
+		db.Close()
+	}
+}
+
 func main() {
+	// Initialize last counts
+	db, err := sql.Open("sqlite", "data/amass/amass.sqlite")
+	if err == nil {
+		db.QueryRow("SELECT COUNT(*) FROM assets").Scan(&lastAssetCount)
+		db.QueryRow("SELECT COUNT(*) FROM relations").Scan(&lastRelationCount)
+		db.Close()
+	}
+
+	// Start database monitoring in a goroutine
+	go monitorDatabaseChanges()
+
 	// Setup websocket endpoint
 	http.HandleFunc("/ws", handleWebSocket)
 

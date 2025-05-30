@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import logo from "@/assets/logo.png";
-import { LogOut } from "lucide-vue-next";
+import { LogOut, Square, Trash2 } from "lucide-vue-next";
 import SearchBar from "@/components/header/SearchBar.vue";
 import Button from "../ui/button/Button.vue";
 import { useRouter } from "vue-router";
 import { AuthService } from "@/services/auth";
 import { toast } from "vue-sonner";
+import { ScanService } from "@/services/scanService";
 
 const router = useRouter();
 const authService = AuthService.getInstance();
@@ -23,6 +24,30 @@ const handleSignOut = async () => {
 		toast.error("Failed to sign out");
 	}
 };
+
+const handleStopScan = async () => {
+	try {
+		const response = await ScanService.getInstance().stopScan();
+		toast.success(response.message);
+	} catch (error) {
+		console.error("Error stopping scan:", error);
+		toast.error("Failed to stop scan");
+	}
+};
+
+const handleClean = async () => {
+	try {
+		const response = await ScanService.getInstance().clean();
+		if (response.success) {
+			toast.success("Database and logs cleaned successfully");
+		} else {
+			toast.error("Failed to clean database and logs");
+		}
+	} catch (error) {
+		console.error("Error cleaning database and logs:", error);
+		toast.error("Failed to clean database and logs");
+	}
+};
 </script>
 
 <template>
@@ -36,16 +61,30 @@ const handleSignOut = async () => {
 				</a>
 
 				<!-- Signout Button (visible in top row only on mobile) -->
-				<Button variant="secondary" size="icon" class="size-10 md:hidden" @click="handleSignOut">
-					<LogOut :size="24" class="text-neutral-100" />
-				</Button>
+				<div class="flex gap-2 md:hidden">
+					<Button variant="secondary" size="icon" class="size-10 bg-blue-400 hover:bg-blue-300" @click="handleClean">
+						<Trash2 :size="24" class="text-neutral-100" />
+					</Button>
+					<Button variant="secondary" size="icon" class="size-10 bg-red-400 hover:bg-red-300" @click="handleStopScan">
+						<Square :size="24" class="text-neutral-100" />
+					</Button>
+					<Button variant="secondary" size="icon" class="size-10" @click="handleSignOut">
+						<LogOut :size="24" class="text-neutral-100" />
+					</Button>
+				</div>
 			</div>
 
 			<!-- Search bar -->
 			<SearchBar class="w-full md:max-w-xl" />
 
 			<!-- Signout Button (visible in main row on desktop) -->
-			<div class="w-32 flex justify-end">
+			<div class="w-32 flex justify-end gap-2">
+				<Button variant="secondary" size="icon" class="hidden md:flex size-10 md:size-12 bg-blue-400 hover:bg-blue-300" @click="handleClean">
+					<Trash2 :size="24" class="text-neutral-100 md:text-[30px]" />
+				</Button>
+				<Button variant="secondary" size="icon" class="hidden md:flex size-10 md:size-12 bg-red-400 hover:bg-red-300" @click="handleStopScan">
+					<Square :size="24" class="text-neutral-100 md:text-[30px]" />
+				</Button>
 				<Button variant="secondary" size="icon" class="hidden md:flex size-10 md:size-12" @click="handleSignOut">
 					<LogOut :size="24" class="text-neutral-100 md:text-[30px]" />
 				</Button>

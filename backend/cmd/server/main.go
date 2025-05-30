@@ -44,7 +44,8 @@ func main() {
 		protected.GET("/scan", handler.ScanHandler)
 		protected.POST("/scan/stop", handler.StopScanHandler)
 		protected.GET("/scan/status", handler.StatusHandler)
-		protected.GET("/amass/data", handler.AmassDataHandler)
+		protected.POST("/clean", handler.CleanHandler)
+		// protected.GET("/amass/data", handler.AmassDataHandler)
 	}
 
 	// Start server

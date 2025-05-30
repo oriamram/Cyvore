@@ -38,18 +38,25 @@ func StopScanHandler(c *gin.Context) {
 	// Get the scan service instance
 	scanService, err := service.GetScanService()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to initialize scan service: " + err.Error()})
+		c.JSON(500, gin.H{
+			"success": false,
+			"error": "Failed to initialize scan service: " + err.Error(),
+		})
 		return
 	}
 
 	// Stop the scan
 	err = scanService.StopScan()
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to stop scan: " + err.Error()})
+		c.JSON(500, gin.H{
+			"success": false,
+			"error": "Failed to stop scan: " + err.Error(),
+		})
 		return
 	}
 
 	c.JSON(200, gin.H{
+		"success": true,
 		"message": "Scan stopped successfully",
 	})
 }

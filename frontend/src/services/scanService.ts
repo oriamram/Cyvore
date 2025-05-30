@@ -26,10 +26,9 @@ export class ScanService {
 
 	public async startScan(target: string): Promise<any> {
 		try {
-			const response = await fetch(`${API_URL}/scan`, {
-				method: "POST",
+			const response = await fetch(`${API_URL}/scan?domain=${encodeURIComponent(target)}`, {
+				method: "GET",
 				headers: this.getHeaders(),
-				body: JSON.stringify({ target }),
 			});
 			return await response.json();
 		} catch (error) {
@@ -53,8 +52,6 @@ export class ScanService {
 
 	public async getStatus(): Promise<any> {
 		try {
-			console.log(this.getHeaders());
-
 			const response = await fetch(`${API_URL}/scan/status`, {
 				method: "GET",
 				headers: this.getHeaders(),
@@ -66,15 +63,15 @@ export class ScanService {
 		}
 	}
 
-	public async getAmassData(): Promise<any> {
+	public async clean(): Promise<any> {
 		try {
-			const response = await fetch(`${API_URL}/amass/data`, {
-				method: "GET",
+			const response = await fetch(`${API_URL}/clean`, {
+				method: "POST",
 				headers: this.getHeaders(),
 			});
 			return await response.json();
 		} catch (error) {
-			console.error("Failed to get Amass data:", error);
+			console.error("Failed to clean database and logs:", error);
 			throw error;
 		}
 	}
