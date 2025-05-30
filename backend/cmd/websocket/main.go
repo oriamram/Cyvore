@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -179,16 +180,28 @@ func sendCurrentData(conn *websocket.Conn, state ClientState) error {
 	}
 
 	// Build relation query
-	relationQuery := "SELECT id, created_at, type, from_asset_id, to_asset_id, last_seen FROM relations"
+	relationQuery := `
+		SELECT 
+			r.id, 
+			r.created_at, 
+			r.type, 
+			r.from_asset_id,
+			fa.content as from_asset_content,
+			r.to_asset_id,
+			ta.content as to_asset_content,
+			r.last_seen 
+		FROM relations r
+		LEFT JOIN assets fa ON r.from_asset_id = fa.id
+		LEFT JOIN assets ta ON r.to_asset_id = ta.id`
 	relationArgs := []interface{}{}
 	if state.RelationType != "" {
-		relationQuery += " WHERE type = ?"
+		relationQuery += " WHERE r.type = ?"
 		relationArgs = append(relationArgs, state.RelationType)
 	}
 
 	// Add sorting if specified
 	if state.SortColumn != "" {
-		relationQuery += " ORDER BY " + state.SortColumn
+		relationQuery += " ORDER BY r." + state.SortColumn
 		if state.SortDirection == "desc" {
 			relationQuery += " DESC"
 		}
@@ -207,9 +220,22 @@ func sendCurrentData(conn *websocket.Conn, state ClientState) error {
 	var relations []Relation
 	for rows.Next() {
 		var relation Relation
-		if err := rows.Scan(&relation.ID, &relation.CreatedAt, &relation.Type, &relation.FromAssetID, &relation.ToAssetID, &relation.LastSeen); err != nil {
+		var fromContent, toContent string
+		if err := rows.Scan(
+			&relation.ID,
+			&relation.CreatedAt,
+			&relation.Type,
+			&relation.FromAssetID,
+			&fromContent,
+			&relation.ToAssetID,
+			&toContent,
+			&relation.LastSeen,
+		); err != nil {
 			return err
 		}
+		// Format the content to show in the UI
+		relation.FromAssetID = formatAssetContent(fromContent)
+		relation.ToAssetID = formatAssetContent(toContent)
 		relations = append(relations, relation)
 	}
 
@@ -221,6 +247,24 @@ func sendCurrentData(conn *websocket.Conn, state ClientState) error {
 	data.Total.Relations = totalRelations
 
 	return conn.WriteJSON(data)
+}
+
+func formatAssetContent(content string) string {
+	var parsed map[string]interface{}
+	if err := json.Unmarshal([]byte(content), &parsed); err != nil {
+		return content
+	}
+	
+	if name, ok := parsed["name"].(string); ok {
+		return name
+	}
+	if address, ok := parsed["address"].(string); ok {
+		if typeStr, ok := parsed["type"].(string); ok {
+			return fmt.Sprintf("%s (%s)", address, typeStr)
+		}
+		return address
+	}
+	return content
 }
 
 func main() {

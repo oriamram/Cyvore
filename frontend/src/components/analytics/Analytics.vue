@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AnalyticsCard from "./AnalyticsCard.vue";
-import { ShieldCheck, Cpu, Database, Wifi } from "lucide-vue-next";
+import { Radar, Cpu, Database, Wifi } from "lucide-vue-next";
 import { getSystemStatus } from "@/api/scanService";
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import wsService from "@/services/websocket";
@@ -14,9 +14,9 @@ const cards = ref([
 		contentColor: "text-red-700",
 	},
 	{
-		title: "Security",
+		title: "Scanner",
 		content: "Active Scan",
-		icon: ShieldCheck,
+		icon: Radar,
 		contentColor: "text-green-700",
 	},
 	{
@@ -37,7 +37,7 @@ const fetchStatus = async () => {
 	try {
 		const status = await getSystemStatus();
 		cards.value[1].content = status.scanning ? "Active" : "Sleeping";
-		cards.value[1].contentColor = status.scanning ? "text-green-700" : "text-red-700";
+		cards.value[1].contentColor = status.scanning ? "text-green-700" : "text-yellow-600";
 	} catch (error) {
 		console.error("Error fetching status:", error);
 	}
