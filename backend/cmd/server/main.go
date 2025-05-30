@@ -33,6 +33,7 @@ func main() {
 	r.POST("/auth/register", handler.Register)
 	r.POST("/auth/signin", handler.SignIn)
 	r.POST("/auth/signout", handler.SignOut)
+	r.POST("/auth/refresh", handler.RefreshToken)
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})

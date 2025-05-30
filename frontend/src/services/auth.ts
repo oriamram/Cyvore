@@ -1,14 +1,19 @@
 import { AuthResponse, LoginRequest, RegisterRequest, ApiResponse } from "../types/auth";
 
 const API_URL = "http://localhost:4000";
+const TOKEN_REFRESH_INTERVAL = 55 * 60 * 1000; // 55 minutes in milliseconds (refresh before 1-hour expiration)
 
 export class AuthService {
 	private static instance: AuthService;
 	private accessToken: string | null = null;
+	private refreshInterval: number | null = null;
 
 	private constructor() {
 		// Initialize from localStorage if available
 		this.accessToken = localStorage.getItem("access_token");
+		if (this.accessToken) {
+			this.startRefreshInterval();
+		}
 	}
 
 	public static getInstance(): AuthService {
@@ -16,6 +21,50 @@ export class AuthService {
 			AuthService.instance = new AuthService();
 		}
 		return AuthService.instance;
+	}
+
+	private startRefreshInterval() {
+		// Clear any existing interval
+		if (this.refreshInterval) {
+			clearInterval(this.refreshInterval);
+		}
+
+		// Start new interval
+		this.refreshInterval = window.setInterval(() => {
+			this.refreshToken();
+		}, TOKEN_REFRESH_INTERVAL);
+	}
+
+	private async refreshToken() {
+		try {
+			const response = await fetch(`${API_URL}/auth/refresh`, {
+				method: "POST",
+				credentials: "include", // Important for cookies
+			});
+
+			const result = await response.json();
+			if (result.success && result.data?.access_token) {
+				this.accessToken = result.data.access_token;
+				localStorage.setItem("access_token", result.data.access_token);
+			} else {
+				// If refresh fails, clear everything and redirect to login
+				this.clearAuth();
+				window.location.href = "/login";
+			}
+		} catch (error) {
+			console.error("Failed to refresh token:", error);
+			this.clearAuth();
+			window.location.href = "/login";
+		}
+	}
+
+	private clearAuth() {
+		this.accessToken = null;
+		localStorage.removeItem("access_token");
+		if (this.refreshInterval) {
+			clearInterval(this.refreshInterval);
+			this.refreshInterval = null;
+		}
 	}
 
 	public getAccessToken(): string | null {
@@ -61,6 +110,7 @@ export class AuthService {
 			if (result.success && result.data?.access_token) {
 				this.accessToken = result.data.access_token;
 				localStorage.setItem("access_token", result.data.access_token);
+				this.startRefreshInterval();
 			}
 			return result;
 		} catch (error) {
@@ -80,8 +130,7 @@ export class AuthService {
 
 			const result = await response.json();
 			if (result.success) {
-				this.accessToken = null;
-				localStorage.removeItem("access_token");
+				this.clearAuth();
 			}
 			return result;
 		} catch (error) {
