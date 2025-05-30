@@ -1,18 +1,60 @@
-Steps to get started
+# Cyvore Setup Guide
 
-git clone https://github.com/oriamram/Cyvore.git
+This guide provides steps to set up and run the Cyvore project.
 
-docker pull caffix/amass
+## Getting Started
 
-go into backend and do go mod download and tidy
+1.  Clone the repository:
 
-go into frontend and do npm ci
+    ```bash
+    git clone https://github.com/oriamram/Cyvore.git
+    ```
 
-now because I chose not to use monorepo manager youll have to run all services seperately
+2.  Pull the Amass Docker image:
+    ```bash
+    docker pull caffix/amass
+    ```
 
-each in its folder -
-frontend: npm run dev
-server: go run cmd/server/main.go
-websocket: go run cmd/server/main.go
+## Setting up Dependencies
 
-now all services should work and you can enter localhost:5173 and meet the login page
+Due to not using a monorepo manager, you will need to set up dependencies for the backend and frontend separately.
+
+1.  Navigate to the `backend` directory and download dependencies:
+
+    ```bash
+    cd backend
+    go mod download
+    go mod tidy
+    ```
+
+2.  Navigate to the `frontend` directory and install dependencies:
+    ```bash
+    cd ../frontend
+    npm ci
+    ```
+
+## Running the Services
+
+Each service needs to be run in its respective folder.
+
+1.  **Frontend:** Run the development server from the `frontend` directory:
+
+    ```bash
+    cd frontend # If not already there
+    npm run dev
+    ```
+
+2.  **Server:** Run the backend server from the `backend` directory:
+
+    ```bash
+    cd backend # If not already there
+    go run cmd/server/main.go
+    ```
+
+3.  **Websocket:** Run the websocket server from the `backend` directory:
+    ```bash
+    cd backend # If not already there
+    go run cmd/server/main.go
+    ```
+
+Once all services are running, you can access the login page at `localhost:5173`.
