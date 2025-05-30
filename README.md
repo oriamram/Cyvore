@@ -58,3 +58,8 @@ Each service needs to be run in its respective folder.
     ```
 
 Once all services are running, you can access the login page at `localhost:5173`.
+
+![image](https://github.com/user-attachments/assets/27eebc2c-f160-494c-91cb-214f3737c4e6)
+![image](https://github.com/user-attachments/assets/d3b2b9fd-42a7-410a-ace9-9f45cf11e62d)
+![image](https://github.com/user-attachments/assets/329e9083-ab4a-4c64-a776-da37cc55e953)
+
