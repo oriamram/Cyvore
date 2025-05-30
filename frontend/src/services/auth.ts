@@ -129,9 +129,8 @@ export class AuthService {
 			});
 
 			const result = await response.json();
-			if (result.success) {
-				this.clearAuth();
-			}
+
+			this.clearAuth();
 			return result;
 		} catch (error) {
 			return {

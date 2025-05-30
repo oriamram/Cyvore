@@ -25,44 +25,68 @@ func init() {
 func Register(c *gin.Context) {
 	var reg model.UserRegistration
 	if err := c.ShouldBindJSON(&reg); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error": "Invalid request body",
+		})
 		return
 	}
 
 	if err := userService.Register(reg); err != nil {
 		if err == model.ErrUserAlreadyExists {
-			c.JSON(http.StatusConflict, gin.H{"error": "Username already exists"})
+			c.JSON(http.StatusConflict, gin.H{
+				"success": false,
+				"error": "Username already exists",
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error": "Failed to register user",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "User registered successfully",
+	})
 }
 
 // SignIn handles user authentication
 func SignIn(c *gin.Context) {
 	var login model.UserLogin
 	if err := c.ShouldBindJSON(&login); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error": "Invalid request body",
+		})
 		return
 	}
 
 	user, err := userService.Login(login)
 	if err != nil {
 		if err == model.ErrUserNotFound || err == model.ErrInvalidPassword {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid username or password"})
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"success": false,
+				"error": "Invalid username or password",
+			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to authenticate user"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error": "Failed to authenticate user",
+		})
 		return
 	}
 
 	// Generate token pair
 	tokens, err := auth.GenerateTokenPair(user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error": "Failed to generate tokens",
+		})
 		return
 	}
 
@@ -78,11 +102,14 @@ func SignIn(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, gin.H{
-		"access_token": tokens.AccessToken,
-		"user": gin.H{
-			"id":       user.ID,
-			"username": user.Username,
-			"email":    user.Email,
+		"success": true,
+		"data": gin.H{
+			"access_token": tokens.AccessToken,
+			"user": gin.H{
+				"id":       user.ID,
+				"username": user.Username,
+				"email":    user.Email,
+			},
 		},
 	})
 }
@@ -100,7 +127,10 @@ func SignOut(c *gin.Context) {
 		true,  // httpOnly
 	)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Signed out successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Signed out successfully",
+	})
 }
 
 // RefreshToken handles token refresh requests
@@ -108,21 +138,30 @@ func RefreshToken(c *gin.Context) {
 	// Get refresh token from cookie
 	refreshToken, err := c.Cookie("refresh_token")
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Refresh token not found"})
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error": "Refresh token not found",
+		})
 		return
 	}
 
 	// Validate refresh token
 	claims, err := auth.ValidateToken(refreshToken)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token"})
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"success": false,
+			"error": "Invalid refresh token",
+		})
 		return
 	}
 
 	// Generate new token pair
 	tokens, err := auth.GenerateTokenPair(claims.UserID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"success": false,
+			"error": "Failed to generate tokens",
+		})
 		return
 	}
 
@@ -138,6 +177,9 @@ func RefreshToken(c *gin.Context) {
 	)
 
 	c.JSON(http.StatusOK, gin.H{
-		"access_token": tokens.AccessToken,
+		"success": true,
+		"data": gin.H{
+			"access_token": tokens.AccessToken,
+		},
 	})
 } 
