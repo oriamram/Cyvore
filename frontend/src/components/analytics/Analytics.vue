@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AnalyticsCard from "./AnalyticsCard.vue";
-import { Radar, Cpu, Database, Wifi } from "lucide-vue-next";
+import { Radar, Database, Wifi } from "lucide-vue-next";
 import { getSystemStatus } from "@/api/scanService";
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import wsService from "@/services/websocket";
@@ -20,14 +20,16 @@ const cards = ref([
 		contentColor: "text-green-700",
 	},
 	{
-		title: "CPU Load",
-		content: "36%",
-		icon: Cpu,
+		title: "Total Assets",
+		content: "0",
+		icon: Database,
+		contentColor: "text-blue-700",
 	},
 	{
-		title: "Database",
-		content: "Connected",
+		title: "Total Relations",
+		content: "0",
 		icon: Database,
+		contentColor: "text-purple-700",
 	},
 ]);
 
@@ -49,12 +51,24 @@ const updateWebSocketStatus = () => {
 	cards.value[0].contentColor = wsService.isConnected.value ? "text-green-700" : "text-red-700";
 };
 
+// Update total counts
+const updateTotalCounts = () => {
+	cards.value[2].content = wsService.total.value.assets.toString();
+	cards.value[3].content = wsService.total.value.relations.toString();
+};
+
+// Watch for changes in WebSocket connection status
 watch(() => wsService.isConnected.value, updateWebSocketStatus);
+
+// Watch for changes in total counts
+watch(() => wsService.total.value.assets, updateTotalCounts);
+watch(() => wsService.total.value.relations, updateTotalCounts);
 
 onMounted(() => {
 	fetchStatus();
 	statusInterval = window.setInterval(fetchStatus, 5000);
 	updateWebSocketStatus();
+	updateTotalCounts();
 });
 
 onUnmounted(() => {
