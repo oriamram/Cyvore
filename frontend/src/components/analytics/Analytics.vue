@@ -70,7 +70,9 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="w-full flex items-center justify-between gap-4 p-4">
-		<AnalyticsCard v-for="(card, index) in cards" :key="index" :title="card.title" :content="card.content" :icon="card.icon" :contentColor="card.contentColor" />
+	<div class="flex flex-col gap-4">
+		<div class="w-full flex items-center justify-between gap-4 p-4">
+			<AnalyticsCard v-for="(card, index) in cards" :key="index" :title="card.title" :content="card.content" :icon="card.icon" :contentColor="card.contentColor" />
+		</div>
 	</div>
 </template>
