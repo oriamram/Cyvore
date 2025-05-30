@@ -25,6 +25,8 @@ class WebSocketService {
 	public currentRelationPage = ref(1);
 	public totalAssetPages = ref(0);
 	public totalRelationPages = ref(0);
+	public sortColumn = ref("");
+	public sortDirection = ref<"asc" | "desc">("asc");
 
 	constructor(private url: string) {}
 
@@ -88,6 +90,8 @@ class WebSocketService {
 				relationPage: this.currentRelationPage.value,
 				relationPageSize: this.PAGE_SIZE,
 				relationType: "",
+				sortColumn: this.sortColumn.value,
+				sortDirection: this.sortDirection.value,
 			};
 			this.ws.send(JSON.stringify(state));
 		}
@@ -138,6 +142,18 @@ class WebSocketService {
 		} else {
 			console.error("WebSocket is not connected");
 		}
+	}
+
+	requestSort(column: string) {
+		if (this.sortColumn.value === column) {
+			// Toggle direction if same column
+			this.sortDirection.value = this.sortDirection.value === "asc" ? "desc" : "asc";
+		} else {
+			// New column, default to ascending
+			this.sortColumn.value = column;
+			this.sortDirection.value = "asc";
+		}
+		this.sendState();
 	}
 
 	disconnect() {

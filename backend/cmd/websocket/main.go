@@ -60,6 +60,9 @@ type ClientState struct {
 	RelationPage     int    `json:"relationPage"`
 	RelationPageSize int    `json:"relationPageSize"`
 	RelationType     string `json:"relationType"`
+
+	SortColumn    string `json:"sortColumn"`
+	SortDirection string `json:"sortDirection"`
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -147,6 +150,15 @@ func sendCurrentData(conn *websocket.Conn, state ClientState) error {
 		assetQuery += " content LIKE ?"
 		assetArgs = append(assetArgs, "%"+state.AssetFilter+"%")
 	}
+
+	// Add sorting if specified
+	if state.SortColumn != "" {
+		assetQuery += " ORDER BY " + state.SortColumn
+		if state.SortDirection == "desc" {
+			assetQuery += " DESC"
+		}
+	}
+
 	assetQuery += " LIMIT ? OFFSET ?"
 	assetArgs = append(assetArgs, state.AssetPageSize, (state.AssetPage-1)*state.AssetPageSize)
 
@@ -173,6 +185,15 @@ func sendCurrentData(conn *websocket.Conn, state ClientState) error {
 		relationQuery += " WHERE type = ?"
 		relationArgs = append(relationArgs, state.RelationType)
 	}
+
+	// Add sorting if specified
+	if state.SortColumn != "" {
+		relationQuery += " ORDER BY " + state.SortColumn
+		if state.SortDirection == "desc" {
+			relationQuery += " DESC"
+		}
+	}
+
 	relationQuery += " LIMIT ? OFFSET ?"
 	relationArgs = append(relationArgs, state.RelationPageSize, (state.RelationPage-1)*state.RelationPageSize)
 

@@ -41,18 +41,18 @@ const formatDate = (dateStr: string) => {
 };
 
 const assetColumns = [
-	{ key: "type", label: "Type" },
-	{ key: "content", label: "Content", formatter: getAssetContent },
-	{ key: "created_at", label: "Created", formatter: formatDate },
-	{ key: "last_seen", label: "Last Seen", formatter: formatDate },
+	{ key: "type", label: "Type", sortable: true },
+	{ key: "content", label: "Content", formatter: getAssetContent, sortable: false },
+	{ key: "created_at", label: "Created", formatter: formatDate, sortable: true },
+	{ key: "last_seen", label: "Last Seen", formatter: formatDate, sortable: true },
 ];
 
 const relationColumns = [
-	{ key: "type", label: "Type" },
-	{ key: "from_asset_id", label: "From Asset ID" },
-	{ key: "to_asset_id", label: "To Asset ID" },
-	{ key: "created_at", label: "Created", formatter: formatDate },
-	{ key: "last_seen", label: "Last Seen", formatter: formatDate },
+	{ key: "type", label: "Type", sortable: true },
+	{ key: "from_asset_id", label: "From Asset ID", sortable: false },
+	{ key: "to_asset_id", label: "To Asset ID", sortable: false },
+	{ key: "created_at", label: "Created", formatter: formatDate, sortable: true },
+	{ key: "last_seen", label: "Last Seen", formatter: formatDate, sortable: true },
 ];
 
 import { ref } from "vue";

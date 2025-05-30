@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import wsService from "@/services/websocket";
-import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationFirst, PaginationLast, PaginationEllipsis } from "@/components/ui/pagination";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-vue-next";
+import { Pagination, PaginationContent, PaginationItem, PaginationPrevious, PaginationNext, PaginationEllipsis } from "@/components/ui/pagination";
+import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 const props = defineProps<{
 	type: "assets" | "relations";
@@ -25,9 +25,6 @@ const changePage = (page: number) => {
 <template>
 	<Pagination v-if="totalPages > 1" :items-per-page="108" :total="totalPages * 108" :page="currentPage" class="justify-end">
 		<PaginationContent>
-			<PaginationFirst :disabled="currentPage === 1" @click="changePage(1)">
-				<ChevronsLeft class="w-4 h-4" />
-			</PaginationFirst>
 			<PaginationPrevious :disabled="currentPage === 1" @click="changePage(currentPage - 1)">
 				<ChevronLeft class="w-4 h-4" />
 			</PaginationPrevious>
@@ -61,9 +58,6 @@ const changePage = (page: number) => {
 			<PaginationNext :disabled="currentPage === totalPages" @click="changePage(currentPage + 1)">
 				<ChevronRight class="w-4 h-4" />
 			</PaginationNext>
-			<PaginationLast :disabled="currentPage === totalPages" @click="changePage(totalPages)">
-				<ChevronsRight class="w-4 h-4" />
-			</PaginationLast>
 		</PaginationContent>
 	</Pagination>
 </template>
