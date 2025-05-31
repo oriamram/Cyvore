@@ -1,6 +1,8 @@
 # Cyvore Setup Guide
 
 This guide provides steps to set up and run the Cyvore project.
+Here is a link to a walkthrough video:
+https://drive.google.com/file/d/14lXxw1jiYoyuh2C1mUhO5WfhbqHdpyIA/view?usp=sharing
 
 ## Getting Started
 
