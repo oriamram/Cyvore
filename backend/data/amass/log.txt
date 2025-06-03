@@ -1,0 +1,101 @@
+08:14:45.868788 DNSRepo: check callback failed for the configuration
+08:14:45.868813 Hunter: check callback failed for the configuration
+08:14:45.868817 Detectify: check callback failed for the configuration
+08:14:45.868829 IPdata: check callback failed for the configuration
+08:14:45.868827 Deepinfo: check callback failed for the configuration
+08:14:45.868832 IPinfo: check callback failed for the configuration
+08:14:45.868836 IntelX: check callback failed for the configuration
+08:14:45.868836 Quake: check callback failed for the configuration
+08:14:45.868852 ThreatBook: check callback failed for the configuration
+08:14:45.868858 ZoomEye: check callback failed for the configuration
+08:14:45.868861 PentestTools: check callback failed for the configuration
+08:14:45.868870 ONYPHE: check callback failed for the configuration
+08:14:45.868800 DNSlytics: check callback failed for the configuration
+08:14:45.868884 FOFA: check callback failed for the configuration
+08:14:45.868884 CIRCL: check callback failed for the configuration
+08:14:45.868882 Netlas: check callback failed for the configuration
+08:14:45.868890 360PassiveDNS: check callback failed for the configuration
+08:14:45.868890 ASNLookup: check callback failed for the configuration
+08:14:45.868893 FacebookCT: check callback failed for the configuration
+08:14:45.868895 BigDataCloud: check callback failed for the configuration
+08:14:45.868893 CertCentral: check callback failed for the configuration
+08:14:45.868898 FullHunt: check callback failed for the configuration
+08:14:45.868899 Chaos: check callback failed for the configuration
+08:14:45.868905 GitHub: check callback failed for the configuration
+08:14:45.868913 PassiveTotal: check callback failed for the configuration
+08:14:45.868919 GitLab: check callback failed for the configuration
+08:14:45.868930 Censys: check callback failed for the configuration
+08:14:45.868947 BeVigil: check callback failed for the configuration
+08:14:45.868970 DNSDB: check callback failed for the configuration
+08:14:45.868981 BinaryEdge: check callback failed for the configuration
+08:14:45.869089 BufferOver: check callback failed for the configuration
+08:14:45.869102 Spamhaus: check callback failed for the configuration
+08:14:45.869103 Pastebin: check callback failed for the configuration
+08:14:45.869109 SecurityTrails: check callback failed for the configuration
+08:14:45.869111 Shodan: check callback failed for the configuration
+08:14:45.869117 Ahrefs: check callback failed for the configuration
+08:14:45.869125 PublicWWW: check callback failed for the configuration
+08:14:45.869126 SOCRadar: check callback failed for the configuration
+08:14:45.869127 BuiltWith: check callback failed for the configuration
+08:14:45.869354 WhoisXMLAPI: check callback failed for the configuration
+08:14:45.869394 VirusTotal: check callback failed for the configuration
+08:14:45.869425 Yandex: check callback failed for the configuration
+08:14:45.869440 C99: check callback failed for the configuration
+08:14:45.869445 ZETAlytics: check callback failed for the configuration
+08:14:45.875198 Querying Baidu for cyvore.com subdomains
+08:14:45.875268 Querying DuckDuckGo for cyvore.com subdomains
+08:14:45.875225 Querying Maltiverse for cyvore.com subdomains
+08:14:45.875226 Querying AlienVault for cyvore.com subdomains
+08:14:45.875227 Querying DNSHistory for cyvore.com subdomains
+08:14:45.875228 Querying Arquivo for cyvore.com subdomains
+08:14:45.875228 Querying Sublist3rAPI for cyvore.com subdomains
+08:14:45.875230 Querying HackerTarget for cyvore.com subdomains
+08:14:45.875231 Querying Digitorus for cyvore.com subdomains
+08:14:45.875232 Querying Mnemonic for cyvore.com subdomains
+08:14:45.875233 Querying Crtsh for cyvore.com subdomains
+08:14:45.875229 Querying CommonCrawl for cyvore.com subdomains
+08:14:45.875234 Querying DNSSpy for cyvore.com subdomains
+08:14:45.875235 Querying AnubisDB for cyvore.com subdomains
+08:14:45.875235 Querying Google for cyvore.com subdomains
+08:14:45.875236 Querying ThreatMiner for cyvore.com subdomains
+08:14:45.875238 Querying SiteDossier for cyvore.com subdomains
+08:14:45.875234 Querying Wayback for cyvore.com subdomains
+08:14:45.875240 Querying DNS SRV for cyvore.com subdomains
+08:14:45.875236 Querying Searx for cyvore.com subdomains
+08:14:45.875240 Querying Brute Forcing for cyvore.com subdomains
+08:14:45.875241 Querying Gists for cyvore.com subdomains
+08:14:45.875242 Querying SubdomainCenter for cyvore.com subdomains
+08:14:45.875242 Querying Greynoise for cyvore.com subdomains
+08:14:45.875243 Querying HackerOne for cyvore.com subdomains
+08:14:45.875244 Querying HyperStat for cyvore.com subdomains
+08:14:45.875244 Querying LeakIX for cyvore.com subdomains
+08:14:45.875245 Querying Active Crawl for cyvore.com subdomains
+08:14:45.875246 Querying PKey for cyvore.com subdomains
+08:14:45.875245 Querying Searchcode for cyvore.com subdomains
+08:14:45.875247 Querying Pulsedive for cyvore.com subdomains
+08:14:45.875247 Querying AbuseIPDB for cyvore.com subdomains
+08:14:45.875248 Querying Riddler for cyvore.com subdomains
+08:14:45.875248 Querying CertSpotter for cyvore.com subdomains
+08:14:45.875249 Querying RapidDNS for cyvore.com subdomains
+08:14:45.875249 Querying Yahoo for cyvore.com subdomains
+08:14:45.875250 Querying Ask for cyvore.com subdomains
+08:14:45.875251 Querying DNSDumpster for cyvore.com subdomains
+08:14:45.875249 Querying URLScan for cyvore.com subdomains
+08:14:45.875252 Querying HAW for cyvore.com subdomains
+08:14:45.875262 Querying GrepApp for cyvore.com subdomains
+08:14:45.875259 Querying Bing for cyvore.com subdomains
+08:14:45.875263 Querying UKWebArchive for cyvore.com subdomains
+08:14:45.875264 Querying Active DNS for cyvore.com subdomains
+08:14:45.875333 Querying Synapsint for cyvore.com subdomains
+08:14:48.045919 DNSDumpster: failed to discover the token in the response body
+08:14:48.081451 AbuseIPDB: get_ip request to service returned with status code: 403 Forbidden
+08:14:48.244269 Riddler: scrape: Get "https://riddler.io/search/exportcsv?q=pld:cyvore.com": dial tcp: lookup riddler.io on 192.168.65.7:53: no such host
+08:14:49.315745 Greynoise: vertical request to service returned with status: 404 Not Found
+08:14:49.975354 Pulsedive: vertical request to service returned with status: 429 Too Many Requests
+08:14:50.015832 LeakIX: vertical request to service returned with status: 401 Unauthorized
+08:14:50.488985 DNSHistory: vertical request to service returned with status code: 403 Forbidden
+08:14:50.516982 AnubisDB: scrape: Get "https://anubisdb.com/anubis/subdomains/cyvore.com": stopped after 10 redirects
+08:14:51.054278 Sublist3rAPI: failed to decode the JSON response
+08:14:51.909246 Google: access to search engine is blocked
+08:14:52.440136 Arquivo: vertical request to service returned with status code: 400 Bad Request
+08:14:55.356664 ThreatMiner: vertical request to service returned with status: 500 Internal Server Error
