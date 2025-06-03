@@ -18,11 +18,22 @@
 					type="text"
 					required
 					class="bg-white/90 text-neutral-800 placeholder:text-neutral-500"
+					:class="{ 'border-red-500': errors.username }"
 				/>
+				<p v-if="errors.username" class="mt-1 text-sm text-red-500">{{ errors.username }}</p>
 			</div>
 			<div>
 				<label for="email" class="block text-sm font-medium text-neutral-700 mb-1">Email</label>
-				<Input id="email" v-model="form.email" placeholder="Enter your email" type="email" required class="bg-white/90 text-neutral-800 placeholder:text-neutral-500" />
+				<Input
+					id="email"
+					v-model="form.email"
+					placeholder="Enter your email"
+					type="email"
+					required
+					class="bg-white/90 text-neutral-800 placeholder:text-neutral-500"
+					:class="{ 'border-red-500': errors.email }"
+				/>
+				<p v-if="errors.email" class="mt-1 text-sm text-red-500">{{ errors.email }}</p>
 			</div>
 			<div>
 				<label for="password" class="block text-sm font-medium text-neutral-700 mb-1">Password</label>
@@ -33,7 +44,9 @@
 					type="password"
 					required
 					class="bg-white/90 text-neutral-800 placeholder:text-neutral-500"
+					:class="{ 'border-red-500': errors.password }"
 				/>
+				<p v-if="errors.password" class="mt-1 text-sm text-red-500">{{ errors.password }}</p>
 			</div>
 		</template>
 
@@ -47,22 +60,41 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { AuthService } from "../services/auth";
-import type { RegisterRequest } from "../types/auth";
 import { Input } from "@/components/ui/input";
 import AuthViewLayout from "@/components/layout/AuthViewLayout.vue";
+import { registerSchema, type RegisterFormData } from "@/lib/validation";
 
 const router = useRouter();
 const authService = AuthService.getInstance();
 const loading = ref(false);
 const error = ref("");
+const errors = reactive<Record<string, string>>({});
 
-const form = reactive<RegisterRequest>({
+const form = reactive<RegisterFormData>({
 	username: "",
 	email: "",
 	password: "",
 });
 
+const validateForm = () => {
+	try {
+		registerSchema.parse(form);
+		Object.keys(errors).forEach((key) => delete errors[key]);
+		return true;
+	} catch (err) {
+		if (err instanceof Error) {
+			const zodError = JSON.parse(err.message);
+			zodError.forEach((error: { path: string[]; message: string }) => {
+				errors[error.path[0]] = error.message;
+			});
+		}
+		return false;
+	}
+};
+
 const handleSubmit = async () => {
+	if (!validateForm()) return;
+
 	loading.value = true;
 	error.value = "";
 

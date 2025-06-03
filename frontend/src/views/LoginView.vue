@@ -18,7 +18,9 @@
 					type="text"
 					required
 					class="bg-white/90 text-neutral-800 placeholder:text-neutral-500"
+					:class="{ 'border-red-500': errors.username }"
 				/>
+				<p v-if="errors.username" class="mt-1 text-sm text-red-500">{{ errors.username }}</p>
 			</div>
 			<div>
 				<label for="password" class="block text-sm font-medium text-neutral-700 mb-1">Password</label>
@@ -29,7 +31,9 @@
 					type="password"
 					required
 					class="bg-white/90 text-neutral-800 placeholder:text-neutral-500"
+					:class="{ 'border-red-500': errors.password }"
 				/>
+				<p v-if="errors.password" class="mt-1 text-sm text-red-500">{{ errors.password }}</p>
 			</div>
 		</template>
 
@@ -46,18 +50,38 @@ import { AuthService } from "../services/auth";
 import type { LoginRequest } from "../types/auth";
 import { Input } from "@/components/ui/input";
 import AuthViewLayout from "@/components/layout/AuthViewLayout.vue";
+import { loginSchema, type LoginFormData } from "@/lib/validation";
 
 const router = useRouter();
 const authService = AuthService.getInstance();
 const loading = ref(false);
 const error = ref("");
+const errors = reactive<Record<string, string>>({});
 
-const form = reactive<LoginRequest>({
+const form = reactive<LoginFormData>({
 	username: "",
 	password: "",
 });
 
+const validateForm = () => {
+	try {
+		loginSchema.parse(form);
+		Object.keys(errors).forEach((key) => delete errors[key]);
+		return true;
+	} catch (err) {
+		if (err instanceof Error) {
+			const zodError = JSON.parse(err.message);
+			zodError.forEach((error: { path: string[]; message: string }) => {
+				errors[error.path[0]] = error.message;
+			});
+		}
+		return false;
+	}
+};
+
 const handleSubmit = async () => {
+	if (!validateForm()) return;
+
 	loading.value = true;
 	error.value = "";
 
