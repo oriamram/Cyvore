@@ -47,7 +47,6 @@
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { AuthService } from "../services/auth";
-import type { LoginRequest } from "../types/auth";
 import { Input } from "@/components/ui/input";
 import AuthViewLayout from "@/components/layout/AuthViewLayout.vue";
 import { loginSchema, type LoginFormData } from "@/lib/validation";

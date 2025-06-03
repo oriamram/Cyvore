@@ -1,5 +1,5 @@
 <template>
-	<div class="h-full rounded-2xl w-full bg-white/20 flex flex-col md:px-[30%] px-10 justify-center py-16">
+	<div class="h-full grow rounded-2xl w-full bg-white/20 flex flex-col md:px-[30%] px-10 justify-center py-16">
 		<div class="text-center mb-8">
 			<h2 class="text-4xl font-bold text-neutral-800 mb-2">{{ title }}</h2>
 			<p class="text-neutral-100">{{ subtitle }}</p>

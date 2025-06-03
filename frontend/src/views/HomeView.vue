@@ -8,7 +8,7 @@ import Separator from "@/components/ui/separator/Separator.vue";
 </script>
 
 <template>
-	<div class="flex flex-col items-center h-full w-full rounded-lg shadow-lg bg-white/20 p-6 px-24 max-md:p-3 md:gap-16 gap-10">
+	<div class="flex flex-col grow items-center h-full w-full rounded-lg shadow-lg bg-white/20 p-6 px-24 max-md:p-3 md:gap-16 gap-10">
 		<Header />
 		<Separator class="bg-neutral-300 md:hidden" />
 		<Analytics />
