@@ -39,24 +39,24 @@ Due to not using a monorepo manager, you will need to set up dependencies for th
 
 Each service needs to be run in its respective folder.
 
-1.  **Frontend:** Run the development server from the `frontend` directory:
+1.  **Server:** Run the backend server from the `backend` directory:
+
+    ```bash
+    cd backend # If not already there
+    go run cmd/server/main.go
+    ```
+
+2.  **Websocket:** Run the websocket server from the `backend` directory:
+    ```bash
+    cd backend # If not already there
+    go run cmd/websocket/main.go
+    ```
+
+3.  **Frontend:** Run the development server from the `frontend` directory:
 
     ```bash
     cd frontend # If not already there
     npm run dev
-    ```
-
-2.  **Server:** Run the backend server from the `backend` directory:
-
-    ```bash
-    cd backend # If not already there
-    go run cmd/server/main.go
-    ```
-
-3.  **Websocket:** Run the websocket server from the `backend` directory:
-    ```bash
-    cd backend # If not already there
-    go run cmd/server/main.go
     ```
 
 Once all services are running, you can access the login page at `localhost:5173`.
